@@ -1,0 +1,53 @@
+﻿body {
+    padding: 10 20px;
+}
+
+#nav_username {
+    font-weight:600;
+    padding-right: 20px;
+}
+
+.wrapper_sm{
+    width:800px;
+    margin-left: auto;
+margin-right: auto;
+}
+
+.wrapper_lg{
+    width:1200px;
+    margin-left: auto;
+margin-right: auto;
+}
+
+.dashboard_container{
+    padding-top: 30px;
+}
+
+.content{
+    padding:20px;
+}
+
+#table_box, #control_box{
+    margin: 10px 0;
+    padding: 15px 0;
+}
+
+.control_wrapper{
+    margin: 5px 0; 
+    display: flex;
+}
+
+#show_cap_table{
+    position: absolute;
+    right: 300px;
+    top: 20px;
+}
+
+.dropdown_box{
+    margin-right: 80px;
+}
+
+.editOrder_btn{
+    margin-right: 5px;
+}
+

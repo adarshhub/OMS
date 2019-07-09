@@ -1,0 +1,41 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="User.master.cs" Inherits="WebApplication1.User" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/jQuery.js"></script>
+    <script src="js/bootstrap.min.js" ></script>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+
+    <form id="form1" runat="server">
+        <div>
+            <nav class="navbar navbar-light">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <p class="navbar-brand">Order Management System</p>
+                    </div>
+                    <ul class="navbar-nav my-2 my-lg-0">
+                        <li class="nav-item"><asp:HyperLink  ID="nav_username" runat="server">USERNAME</asp:HyperLink>
+                        <asp:LinkButton class="btn btn-primary" ID="Logout" runat="server" OnClick="Logout_Click">Logout</asp:LinkButton></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        
+        <div class="wrapper_lg dashboard_container">
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    </form>
+    <script>
+        
+    </script>
+</body>
+</html>

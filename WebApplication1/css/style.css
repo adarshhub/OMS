@@ -37,9 +37,9 @@ margin-right: auto;
     display: flex;
 }
 
-#show_cap_table{
+#buttons_box{
     position: absolute;
-    right: 300px;
+    right: 340px;
     top: 20px;
 }
 
@@ -47,7 +47,18 @@ margin-right: auto;
     margin-right: 80px;
 }
 
-.editOrder_btn{
+.tabFirst_btn{
     margin-right: 5px;
 }
 
+.tbl_input{
+    position: absolute;
+}
+
+#display_box table{
+    width: 100%;
+}
+
+#msg_box{
+    bottom: 0;
+}

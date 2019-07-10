@@ -36,6 +36,8 @@ namespace WebApplication1
                 isAdmin.Text = "Admin";
             else
                 isAdmin.Text = "Not Admin";
+
+            Response.Write("<script>var isAdmin=" + flag + "</script>");
         }
 
     }

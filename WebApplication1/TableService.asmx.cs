@@ -25,6 +25,8 @@ namespace WebApplication1
         OracleConnection con;
         OracleCommand cmd;
 
+        JavaScriptSerializer js = new JavaScriptSerializer();
+
         [WebMethod(CacheDuration = 2000)]
         public void getDepatments()
         {
@@ -40,7 +42,6 @@ namespace WebApplication1
                 depts.Add(Convert.ToInt32(rdr["dept"]));   
             }
 
-            JavaScriptSerializer js = new JavaScriptSerializer();
             Context.Response.Write(js.Serialize(depts));
         }
 
@@ -60,7 +61,6 @@ namespace WebApplication1
                 processes.Add(Convert.ToInt32(rdr["process"]));
             }
 
-            JavaScriptSerializer js = new JavaScriptSerializer();
             Context.Response.Write(js.Serialize(processes));
         }
 
@@ -107,11 +107,11 @@ namespace WebApplication1
                 order.total_avl_qnty = Convert.ToInt32(rdr["total_avl_qnty"]);
                 order.order_qnty = Convert.ToInt32(rdr["order_qnty"]);
                 order.process_cntr = Convert.ToInt32(rdr["process_cntr"]);
+                order.yr_wk = Convert.ToInt32(rdr["yr_wk"]);
 
                 orders.Add(order);
             }
 
-            JavaScriptSerializer js = new JavaScriptSerializer();
             Context.Response.Write(js.Serialize(orders));
 
         }
@@ -145,7 +145,7 @@ namespace WebApplication1
         }
 
         [WebMethod(EnableSession = true)]
-        public void updateOrder(int dept, int process, int process_cntr)
+        public void updateOrder(int dept, int process, int process_cntr,int new_order_qnty)
         {
             
             if(Session["edit"] == null)
@@ -153,16 +153,147 @@ namespace WebApplication1
                 authenticate();
             }
 
-            JavaScriptSerializer js = new JavaScriptSerializer();
-
             if (Session["edit"] == "1")
             {
-                Context.Response.Write(js.Serialize("true"));
-            } else
+                con = new OracleConnection(conString);
+                cmd = new OracleCommand();
+
+                string sql = "UPDATE capacity SET order_qnty = :qnty , last_userid = :userid WHERE dept = :dept AND process = :process AND process_cntr = :process_cntr";
+
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+
+                int userid = Convert.ToInt32(Session["id"]);
+
+                cmd.Parameters.AddWithValue("qnty", new_order_qnty);
+                cmd.Parameters.AddWithValue("dept", dept);
+                cmd.Parameters.AddWithValue("process", process);
+                cmd.Parameters.AddWithValue("process_cntr", process_cntr);
+                cmd.Parameters.AddWithValue("userid", userid);
+
+                con.Open();
+
+                int success = cmd.ExecuteNonQuery();
+
+                if (success != 0)
+                {
+                    //Successfull
+                    Context.Response.Write(js.Serialize("true"));
+                }
+                else
+                {
+                    //Not Successfull
+                    Context.Response.Write(js.Serialize("false"));
+                }
+
+            }
+            else
             {
                 Context.Response.Write(js.Serialize("false"));
             }
             
+        }
+
+        [WebMethod(EnableSession = true)]
+        public void deleteOrder(int dept, int process, int process_cntr)
+        {
+            if (Session["edit"] == null)
+            {
+                authenticate();
+            }
+
+            if (Session["edit"] == "1")
+            {
+                con = new OracleConnection(conString);
+                cmd = new OracleCommand();
+
+                string sql = "DELETE FROM capacity WHERE dept = :dept AND process = :process AND process_cntr = :process_cntr";
+
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+
+                cmd.Parameters.AddWithValue("dept", dept);
+                cmd.Parameters.AddWithValue("process", process);
+                cmd.Parameters.AddWithValue("process_cntr", process_cntr);
+
+                con.Open();
+
+                int success = cmd.ExecuteNonQuery();
+
+                if (success != 0)
+                {
+                    //Successfull
+                    Context.Response.Write(js.Serialize("true"));
+                }
+                else
+                {
+                    //Not Successfull
+                    Context.Response.Write(js.Serialize("false"));
+                }
+
+            }
+            else
+            {
+                Context.Response.Write(js.Serialize("false"));
+            }
+
+        }
+
+        [WebMethod(EnableSession = true)]
+        public void addOrder(string jsonOrder)
+        {
+            if (Session["edit"] == null)
+            {
+                authenticate();
+            }
+
+            if (Session["edit"] == "1")
+            {
+                Order order = (Order)js.Deserialize(jsonOrder, typeof(Order));
+
+                con = new OracleConnection(conString);
+                cmd = new OracleCommand();
+
+                string sql = "INSERT INTO capacity (dept, process, process_cntr, yr_wk, total_avl_qnty, order_qnty) VALUES (:dept, :process, :process_cntr, :yr_wk, :total_avl_qnty, :order_qnty)";
+
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+
+                /*
+
+                int dept = order.dept;
+                int process = order.process;
+                int process_cntr = order.process_cntr;
+                int total_avl_qnty = order.total_avl_qnty;
+                int order_qnty = order.order_qnty;
+                int avl_promise = order.process_cntr;
+                int yr_wk = order.yr_wk;
+
+    */
+
+                cmd.Parameters.AddWithValue("dept", order.dept);
+                cmd.Parameters.AddWithValue("process", order.process);
+                cmd.Parameters.AddWithValue("process_cntr", order.process_cntr);
+                cmd.Parameters.AddWithValue("yr_wk", order.yr_wk);
+                cmd.Parameters.AddWithValue("total_avl_qnty", order.total_avl_qnty);
+                cmd.Parameters.AddWithValue("order_qnty", order.order_qnty);
+
+                con.Open();
+
+                int success = cmd.ExecuteNonQuery();
+
+                if (success != 0)
+                {
+                    //Successfull
+                    Context.Response.Write(js.Serialize("true"));
+                }
+                else
+                {
+                    //Not Successfull
+                    Context.Response.Write(js.Serialize("false"));
+                }
+
+            }
         }
     }
 }

@@ -214,8 +214,8 @@
 
                     var html;
 
-                    if (data == "false") {
-                        html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">Something Went Wrong</p></div>';
+                    if (data != "true") {
+                        html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">'+data+'</p></div>';
                         
                     } else {
                         html = '<div class="alert alert-dismissible alert-success"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Successfull!</h4><p class="mb-0">New Order Added</p></div>';

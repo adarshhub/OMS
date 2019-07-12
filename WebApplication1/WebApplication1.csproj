@@ -87,7 +87,6 @@
     <Content Include="Login.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="TableService.asmx" />
-    <Content Include="WebForm3.aspx" />
     <Content Include="User.Master" />
     <Content Include="Dashboard.aspx" />
     <None Include="Web.Debug.config">
@@ -137,13 +136,6 @@
     </Compile>
     <Compile Include="User.Master.designer.cs">
       <DependentUpon>User.Master</DependentUpon>
-    </Compile>
-    <Compile Include="WebForm3.aspx.cs">
-      <DependentUpon>WebForm3.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="WebForm3.aspx.designer.cs">
-      <DependentUpon>WebForm3.aspx</DependentUpon>
     </Compile>
     <Compile Include="Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>

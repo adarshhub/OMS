@@ -25,15 +25,21 @@ namespace WebApplication1
         OracleConnection con;
         OracleCommand cmd;
 
-        JavaScriptSerializer js = new JavaScriptSerializer();
+        JavaScriptSerializer js;
+
+        public TableService()
+        {
+            con = new OracleConnection(conString);
+            js = new JavaScriptSerializer();
+            con.Open();
+        }
 
         [WebMethod(CacheDuration = 2000)]
         public void getDepatments()
         {
             List<int> depts = new List<int>();
-            con = new OracleConnection(conString);
+            
             cmd = new OracleCommand("SELECT DISTINCT dept FROM capacity", con);
-            con.Open();
 
             OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -49,10 +55,8 @@ namespace WebApplication1
         public void getProcess(int dept)
         {
             List<int> processes = new List<int>();
-            con = new OracleConnection(conString);
-            cmd = new OracleCommand("SELECT process FROM capacity WHERE dept = :dept", con);
+            cmd = new OracleCommand("SELECT DISTINCT process FROM capacity WHERE dept = :dept", con);
             cmd.Parameters.AddWithValue("dept", dept);
-            con.Open();
 
             OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -68,7 +72,6 @@ namespace WebApplication1
         public void getTable(int dept, int process, int from, int to)
         {
             List<Order> orders = new List<Order>();
-            con = new OracleConnection(conString);
             string SQL;
 
             if(from != -1 && to != -1)
@@ -93,7 +96,6 @@ namespace WebApplication1
                 cmd.Parameters.AddWithValue("process", process);
             }
             
-            con.Open();
             
             OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -122,8 +124,6 @@ namespace WebApplication1
             Session["edit"] = "0";
 
             int userid = Convert.ToInt32(Session["id"]);
-
-            con = new OracleConnection(conString);
             cmd = new OracleCommand();
 
             string sql = "SELECT isAdmin FROM cap_users WHERE id = :id";
@@ -132,8 +132,6 @@ namespace WebApplication1
             cmd.CommandText = sql;
 
             cmd.Parameters.AddWithValue("id", userid);
-
-            con.Open();
 
             string admin = cmd.ExecuteScalar().ToString();
 
@@ -155,7 +153,6 @@ namespace WebApplication1
 
             if (Session["edit"] == "1")
             {
-                con = new OracleConnection(conString);
                 cmd = new OracleCommand();
 
                 string sql = "UPDATE capacity SET order_qnty = :qnty , last_userid = :userid WHERE dept = :dept AND process = :process AND process_cntr = :process_cntr";
@@ -170,8 +167,6 @@ namespace WebApplication1
                 cmd.Parameters.AddWithValue("process", process);
                 cmd.Parameters.AddWithValue("process_cntr", process_cntr);
                 cmd.Parameters.AddWithValue("userid", userid);
-
-                con.Open();
 
                 int success = cmd.ExecuteNonQuery();
 
@@ -204,7 +199,7 @@ namespace WebApplication1
 
             if (Session["edit"] == "1")
             {
-                con = new OracleConnection(conString);
+                
                 cmd = new OracleCommand();
 
                 string sql = "DELETE FROM capacity WHERE dept = :dept AND process = :process AND process_cntr = :process_cntr";
@@ -215,8 +210,6 @@ namespace WebApplication1
                 cmd.Parameters.AddWithValue("dept", dept);
                 cmd.Parameters.AddWithValue("process", process);
                 cmd.Parameters.AddWithValue("process_cntr", process_cntr);
-
-                con.Open();
 
                 int success = cmd.ExecuteNonQuery();
 
@@ -239,6 +232,25 @@ namespace WebApplication1
 
         }
 
+        private int alreadyPresent(int dept,int process,int process_cntr)
+        {
+            
+            cmd = new OracleCommand();
+
+            string sql = "SELECT COUNT(*) FROM capacity WHERE dept = :dept AND process = :process AND process_cntr = :process_cntr";
+
+            cmd.Connection = con;
+            cmd.CommandText = sql;
+
+            cmd.Parameters.AddWithValue("dept", dept);
+            cmd.Parameters.AddWithValue("process", process);
+            cmd.Parameters.AddWithValue("process_cntr", process_cntr);
+
+            string success = cmd.ExecuteScalar().ToString();
+
+            return Convert.ToInt32(success);
+        }
+
         [WebMethod(EnableSession = true)]
         public void addOrder(string jsonOrder)
         {
@@ -251,46 +263,50 @@ namespace WebApplication1
             {
                 Order order = (Order)js.Deserialize(jsonOrder, typeof(Order));
 
-                con = new OracleConnection(conString);
-                cmd = new OracleCommand();
-
-                string sql = "INSERT INTO capacity (dept, process, process_cntr, yr_wk, total_avl_qnty, order_qnty) VALUES (:dept, :process, :process_cntr, :yr_wk, :total_avl_qnty, :order_qnty)";
-
-                cmd.Connection = con;
-                cmd.CommandText = sql;
-
-                /*
-
-                int dept = order.dept;
-                int process = order.process;
-                int process_cntr = order.process_cntr;
-                int total_avl_qnty = order.total_avl_qnty;
-                int order_qnty = order.order_qnty;
-                int avl_promise = order.process_cntr;
-                int yr_wk = order.yr_wk;
-
-    */
-
-                cmd.Parameters.AddWithValue("dept", order.dept);
-                cmd.Parameters.AddWithValue("process", order.process);
-                cmd.Parameters.AddWithValue("process_cntr", order.process_cntr);
-                cmd.Parameters.AddWithValue("yr_wk", order.yr_wk);
-                cmd.Parameters.AddWithValue("total_avl_qnty", order.total_avl_qnty);
-                cmd.Parameters.AddWithValue("order_qnty", order.order_qnty);
-
-                con.Open();
-
-                int success = cmd.ExecuteNonQuery();
-
-                if (success != 0)
+                if (alreadyPresent(order.dept, order.process, order.process_cntr) != 0)
                 {
-                    //Successfull
-                    Context.Response.Write(js.Serialize("true"));
+                    Context.Response.Write(js.Serialize("Order Already Present"));
                 }
                 else
                 {
-                    //Not Successfull
-                    Context.Response.Write(js.Serialize("false"));
+                    cmd = new OracleCommand();
+
+                    string sql = "INSERT INTO capacity (dept, process, process_cntr, yr_wk, total_avl_qnty, order_qnty) VALUES (:dept, :process, :process_cntr, :yr_wk, :total_avl_qnty, :order_qnty)";
+
+                    cmd.Connection = con;
+                    cmd.CommandText = sql;
+
+                    /*
+
+                    int dept = order.dept;
+                    int process = order.process;
+                    int process_cntr = order.process_cntr;
+                    int total_avl_qnty = order.total_avl_qnty;
+                    int order_qnty = order.order_qnty;
+                    int avl_promise = order.process_cntr;
+                    int yr_wk = order.yr_wk;
+
+        */
+
+                    cmd.Parameters.AddWithValue("dept", order.dept);
+                    cmd.Parameters.AddWithValue("process", order.process);
+                    cmd.Parameters.AddWithValue("process_cntr", order.process_cntr);
+                    cmd.Parameters.AddWithValue("yr_wk", order.yr_wk);
+                    cmd.Parameters.AddWithValue("total_avl_qnty", order.total_avl_qnty);
+                    cmd.Parameters.AddWithValue("order_qnty", order.order_qnty);
+
+                    int success = cmd.ExecuteNonQuery();
+
+                    if (success != 0)
+                    {
+                        //Successfull
+                        Context.Response.Write(js.Serialize("true"));
+                    }
+                    else
+                    {
+                        //Not Successfull
+                        Context.Response.Write(js.Serialize("Something Went Wrong"));
+                    }
                 }
 
             }

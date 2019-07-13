@@ -14,9 +14,9 @@ margin-right: auto;
 }
 
 .wrapper_lg{
-    width:1200px;
+    width: 1280px;
     margin-left: auto;
-margin-right: auto;
+    margin-right: auto;
 }
 
 .dashboard_container{
@@ -39,8 +39,9 @@ margin-right: auto;
 
 #buttons_box{
     position: absolute;
-    right: 340px;
+    right: 133px;
     top: 20px;
+    display: flex;
 }
 
 .dropdown_box{
@@ -49,6 +50,10 @@ margin-right: auto;
 
 .tabFirst_btn{
     margin-right: 5px;
+}
+
+#display_box table td{
+    width: 160px;
 }
 
 .tbl_input{
@@ -61,4 +66,22 @@ margin-right: auto;
 
 #msg_box{
     bottom: 0;
+}
+
+#left_btns_box{
+    display: grid;
+    margin-right:20px;
+}
+
+#right_btns_box{
+    display: flow-root;
+}
+
+#show_cap_table{
+    margin-bottom: 10px;
+}
+
+#copy_order_btn{
+    float: right;
+    margin-right: 106px;
 }

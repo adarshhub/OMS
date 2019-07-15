@@ -181,12 +181,13 @@
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         <input type="button" id="add_order_btn" class="btn btn-success" value="Confirm" onclick="addOrder()" />
                     </div>
+            </div>
+        </div>
+    </div>
              -->
 
     </div>
-    </div>
-        </div>
-    </div>
+
 
     <!-- script -->
 
@@ -237,7 +238,7 @@
                         $(data).each(function (index, item) {
                             tableID = item["dept"] + ' ' + item["process"] + ' ' + item["process_cntr"] + ' ' + item["yr_wk"];
 
-                            table += '<tr><td>' + '<span id="' + tableID + '_ED"><input type="button" class="btn btn-secondary tabFirst_btn btn-sm"  value="Edit" onclick="editOrder(' + item["dept"] + ',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ',' + item["total_avl_qnty"] + ')" ' + attr + '/><input type="button" class="btn btn-danger btn-sm" value="Delete" onclick="deleteOrder(' + item["dept"] + ',' + item["process"] + ',' + item["process_cntr"] + ','+item["yr_wk"]+ ')" ' + attr + '/></span><span class="' + tableID + '_UC" hidden><input type="button" class="tabFirst_btn btn btn-secondary btn-sm"  value="Update"/><input type="button" class="btn btn-danger btn-sm" value="Cancel" /></span>' + '</td><td>' + item["dept"] + '</td><td>' + item["process_cntr"] + '</td><td>' + item["process"] + '</td><td>' + item["yr_wk"] + '</td><td><span id="' + tableID + ' text">' + item["total_avl_qnty"] + '</span><input id="' + tableID + ' input" class="tbl_input form-control col-sm-1" hidden/></td><td>' + item["avl_promise"] + '</td><td>' + item["order_qnty"] + '</td></tr>';
+                            table += '<tr><td>' + '<span id="' + tableID + '_ED"><input type="button" class="btn btn-secondary tabFirst_btn btn-sm"  value="Edit" onclick="editOrder(' + item["dept"] + ',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ',' + item["total_avl_qnty"] + ')" ' + attr + '/><input type="button" class="btn btn-danger btn-sm" value="Delete" onclick="deleteOrder(' + item["dept"] + ',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ')" ' + attr + '/></span><span class="' + tableID + '_UC" hidden><input type="button" class="tabFirst_btn btn btn-secondary btn-sm"  value="Update"/><input type="button" class="btn btn-danger btn-sm" value="Cancel" /></span>' + '</td><td>' + item["dept"] + '</td><td>' + item["process_cntr"] + '</td><td>' + item["process"] + '</td><td>' + item["yr_wk"] + '</td><td><span id="' + tableID + ' text">' + item["total_avl_qnty"] + '</span><input id="' + tableID + ' input" class="tbl_input form-control col-sm-1" hidden/></td><td>' + item["avl_promise"] + '</td><td>' + item["order_qnty"] + '</td></tr>';
                         });
 
                         table += '</tbody></table>';
@@ -270,7 +271,7 @@
 
         function editOrder(dept, process, process_cntr, yr_wk, oldValue) {
 
-            var ID = dept + ' ' + process + ' ' + process_cntr+ ' ' + yr_wk;
+            var ID = dept + ' ' + process + ' ' + process_cntr + ' ' + yr_wk;
 
             var textID = ID + ' text';
             var inputID = ID + ' input';

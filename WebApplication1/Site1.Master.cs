@@ -17,5 +17,10 @@ namespace WebApplication1
         {
 
         }
+
+        public void addMessage(string msg)
+        {
+            msg_box.InnerHtml = "<div class='alert alert-warning' style='width: 200px; position: absolute; bottom: 0; left: 0; top: 20%; max-height: 135px; '><h4 class='alert-heading'>OOPs!</h4><p class='mb-0'>" + msg +"</p></div>";
+        }
     }
 }

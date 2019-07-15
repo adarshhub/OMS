@@ -19,12 +19,8 @@ margin-right: auto;
     margin-right: auto;
 }
 
-.dashboard_container{
-    padding-top: 30px;
-}
-
 .content{
-    padding:20px;
+    padding:17px;
 }
 
 #table_box, #control_box{
@@ -60,6 +56,11 @@ margin-right: auto;
     position: absolute;
 }
 
+#display_box {
+    overflow-y: scroll;
+    max-height: 288px;
+}
+
 #display_box table{
     width: 100%;
 }
@@ -84,4 +85,9 @@ margin-right: auto;
 #copy_order_btn{
     float: right;
     margin-right: 106px;
+}
+
+.scroll-table{
+    overflow:scroll;
+    height: 70px;
 }

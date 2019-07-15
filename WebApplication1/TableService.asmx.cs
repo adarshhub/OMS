@@ -241,12 +241,12 @@ namespace WebApplication1
 
         }
 
-        private int alreadyPresent(int dept,int process,int process_cntr)
+        private int alreadyPresent(int dept,int process,int process_cntr, int yr_wk)
         {
             
             cmd = new OracleCommand();
 
-            string sql = "SELECT COUNT(*) FROM capacity WHERE dept = :dept AND process = :process AND process_cntr = :process_cntr";
+            string sql = "SELECT COUNT(*) FROM capacity WHERE dept = :dept AND process = :process AND process_cntr = :process_cntr AND yr_wk = :yr_wk";
 
             cmd.Connection = con;
             cmd.CommandText = sql;
@@ -254,6 +254,7 @@ namespace WebApplication1
             cmd.Parameters.AddWithValue("dept", dept);
             cmd.Parameters.AddWithValue("process", process);
             cmd.Parameters.AddWithValue("process_cntr", process_cntr);
+            cmd.Parameters.AddWithValue("yr_wk", yr_wk);
 
             string success = cmd.ExecuteScalar().ToString();
 
@@ -275,7 +276,7 @@ namespace WebApplication1
                 {
                     Order order = (Order)js.Deserialize(jsonOrder, typeof(Order));
 
-                    if (alreadyPresent(order.dept, order.process, order.process_cntr) != 0)
+                    if (alreadyPresent(order.dept, order.process, order.process_cntr, order.yr_wk) != 0)
                     {
                         Context.Response.Write(js.Serialize("Order Already Present"));
                     }

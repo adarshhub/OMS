@@ -11,8 +11,8 @@
                 <asp:TextBox CssClass="form-control" ID="register_un" runat="server" required ViewStateMode="Enabled"></asp:TextBox>
             </div>
             <div class="form-group">
-                <asp:Label runat="server" Text="Email"></asp:Label>
-                <asp:TextBox CssClass="form-control" ID="register_email" runat="server" required ViewStateMode="Enabled"></asp:TextBox>
+                <asp:Label runat="server" Text="EID"></asp:Label>
+                <asp:TextBox CssClass="form-control" ID="register_eid" runat="server" required ViewStateMode="Enabled"></asp:TextBox>
             </div>
             <div class="form-group">
                 <asp:Label runat="server" Text="Password"></asp:Label>

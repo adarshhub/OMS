@@ -31,13 +31,13 @@ namespace WebApplication1 {
         protected global::System.Web.UI.WebControls.TextBox register_un;
         
         /// <summary>
-        /// register_email control.
+        /// register_eid control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox register_email;
+        protected global::System.Web.UI.WebControls.TextBox register_eid;
         
         /// <summary>
         /// register_password1 control.

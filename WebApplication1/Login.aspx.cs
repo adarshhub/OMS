@@ -25,44 +25,53 @@ namespace WebApplication1
 
         protected void login_btn_Click(object sender, EventArgs e)
         {
-            string email = login_email.Text.ToString();
+            string eid = login_eid.Text.ToString();
             string password = login_password.Text.ToString();
 
             con = new OracleConnection(Master.conString);
             cmd = new OracleCommand();
             cmd.Connection = con;
 
-            string sql = "SELECT id, username, password FROM cap_users WHERE email= :email";
+            string sql = "SELECT id, username, password FROM cap_users WHERE eid= :eid";
             cmd.CommandText = sql;
-            cmd.Parameters.AddWithValue("email", email);
+            cmd.Parameters.AddWithValue("eid", eid);
             con.Open();
 
-            reader = cmd.ExecuteReader();
-            if (reader.HasRows)
+            try
             {
-                reader.Read();
-                string unR = reader["username"].ToString();
-                string passR = reader["password"].ToString();
-                int id = Convert.ToInt32(reader["id"]);
-                reader.Close();
-                if (password != passR)
+                reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
                 {
-                    Response.Write("Wrong Password");
+                    reader.Read();
+                    string unR = reader["username"].ToString();
+                    string passR = reader["password"].ToString();
+
+                    reader.Close();
+                    if (password != passR)
+                    {
+                        Master.addMessage("Wrong Password");
+                    }
+                    else
+                    {
+                        Session["username"] = unR;
+                        Session["eid"] = eid;
+                        Response.Redirect("Dashboard.aspx");
+                    }
+
                 }
                 else
                 {
-                    Session["username"] = unR;
-                    Session["email"] = email;
-                    Session["id"] = id;
-                    Response.Redirect("Dashboard.aspx");
+                    Master.addMessage("Not Registered");
                 }
-                
+
             }
-            else
+
+            catch(Exception ex)
             {
-                Response.Write("Not Registered");
+                Master.addMessage("Something Went Wrong");
             }
-  
+
             con.Close();
         }
 

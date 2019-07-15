@@ -24,10 +24,10 @@ namespace WebApplication1
             cmd = new OracleCommand();
             cmd.Connection = con;
 
-            SQL = "SELECT isAdmin FROM cap_users WHERE id= :id";
+            SQL = "SELECT isAdmin FROM cap_users WHERE eid= :eid";
             cmd.CommandText = SQL;
-            int userid = Convert.ToInt32(Session["id"]);
-            cmd.Parameters.AddWithValue("id", userid);
+            int userid = Convert.ToInt32(Session["eid"]);
+            cmd.Parameters.AddWithValue("eid", userid);
             con.Open();
 
             int flag = Convert.ToInt32(cmd.ExecuteScalar());

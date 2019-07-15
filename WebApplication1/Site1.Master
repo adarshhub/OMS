@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/style.css" />
 
     <!-- JS -->
-    
+    <script src="js/bootstrap.min.js"></script>
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 
@@ -18,9 +18,9 @@
 
     <div class="wrapper_sm">
         <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
-        
         </asp:ContentPlaceHolder>
     </div>
-  
+    <div runat="server" id="msg_box">
+    </div>
 </body>
 </html>

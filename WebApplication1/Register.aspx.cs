@@ -21,9 +21,9 @@ namespace WebApplication1
 
         protected void register_button_Click(object sender, EventArgs e)
         {
-            string email, username, password1, password2;
+            string eid, username, password1, password2;
 
-            email = register_email.Text.ToString();
+            eid = register_eid.Text.ToString();
             username = register_un.Text.ToString();
             password1 = register_password1.Text.ToString();
             password2 = register_password2.Text.ToString();
@@ -32,23 +32,23 @@ namespace WebApplication1
             cmd = new OracleCommand();
             cmd.Connection = con;
 
-            string sql = "Select COUNT(*) from cap_users WHERE email= :email";
+            string sql = "Select COUNT(*) from cap_users WHERE eid= :eid";
             cmd.CommandText = sql;
-            cmd.Parameters.AddWithValue("email",email);
+            cmd.Parameters.AddWithValue("eid", eid);
             con.Open();
             string resp = cmd.ExecuteScalar().ToString();
             //OracleDataAdapter orada = new OracleDataAdapter(cmd.CommandText, con);
             if(resp == "1"){
-                Response.Write("Email already Registered");
+                Master.addMessage("EID already Registered");
             } else
             {
                 if (password1 != password2)
-                    Response.Write("Password do not Match");
+                    Master.addMessage("Password do not Match");
                 else
                 {
-                    sql = "INSERT INTO cap_users (username, email, password, isAdmin) VALUES (:username, :email, :password, :isAdmin)";
+                    sql = "INSERT INTO cap_users (username, eid, password, isAdmin) VALUES (:username, :eid, :password, :isAdmin)";
                     cmd.CommandText = sql;
-                    cmd.Parameters.AddWithValue("email", email);
+                    cmd.Parameters.AddWithValue("eid", eid);
                     cmd.Parameters.AddWithValue("username", username);
                     cmd.Parameters.AddWithValue("password", password1);
                     cmd.Parameters.AddWithValue("isAdmin", 0);
@@ -57,11 +57,11 @@ namespace WebApplication1
 
                     if (success != 0)
                     {
-                        Response.Write("Registration Successfull");
+                        Master.addMessage("Registration Successfull");
                         //Navigate to login page
                     } else
                     {
-                        Response.Write("Something Went Wrong");
+                        Master.addMessage("Something Went Wrong");
                     }
 
                 }

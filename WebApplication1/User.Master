@@ -19,7 +19,7 @@
             <nav class="navbar navbar-light">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <p class="navbar-brand">Order Management System</p>
+                        <span class="navbar-brand">Order Management System</span>
                     </div>
                     <ul class="navbar-nav my-2 my-lg-0">
                         <li class="nav-item"><asp:HyperLink  ID="nav_username" runat="server">USERNAME</asp:HyperLink>
@@ -29,7 +29,7 @@
             </nav>
         </div>
         
-        <div class="wrapper_lg dashboard_container">
+        <div class="wrapper_lg">
             <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
             </asp:ContentPlaceHolder>
         </div>

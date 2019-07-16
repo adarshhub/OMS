@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.OracleClient;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Services;
@@ -37,7 +38,7 @@ namespace WebApplication1
         [WebMethod]
         public void getDepatments()
         {
-            List<int> depts = new List<int>();
+            List<string> depts = new List<string>();
             
             cmd = new OracleCommand("SELECT DISTINCT dept FROM capacity", con);
 
@@ -45,35 +46,78 @@ namespace WebApplication1
 
             while (rdr.Read())
             {
-                depts.Add(Convert.ToInt32(rdr["dept"]));   
+                depts.Add(rdr["dept"].ToString());   
             }
 
             Context.Response.Write(js.Serialize(depts));
         }
 
         [WebMethod]
-        public void getProcess(int dept)
+        public void getProcessCntr(string dept)
         {
-            List<int> processes = new List<int>();
-            cmd = new OracleCommand("SELECT DISTINCT process FROM capacity WHERE dept = :dept", con);
+            List<int> process_cntrs = new List<int>();
+            cmd = new OracleCommand("SELECT DISTINCT process_cntr FROM capacity WHERE dept = :dept", con);
             cmd.Parameters.AddWithValue("dept", dept);
 
             OracleDataReader rdr = cmd.ExecuteReader();
 
             while (rdr.Read())
             {
-                processes.Add(Convert.ToInt32(rdr["process"]));
+                process_cntrs.Add(Convert.ToInt32(rdr["process_cntr"]));
             }
 
-            Context.Response.Write(js.Serialize(processes));
+            Context.Response.Write(js.Serialize(process_cntrs));
         }
 
+
         [WebMethod]
-        public void getTable(int dept, int process, int from, int to)
+        public void getTable(string dept, int process_cntr, int from, int to)
         {
             List<Order> orders = new List<Order>();
-            string SQL;
+            string SQL = "SELECT * FROM capacity";
+            cmd = new OracleCommand();
 
+            if (from != -1 && to == -1)
+            {
+                SQL = SQL + " WHERE yr_wk >= :fromT";
+                cmd.Parameters.AddWithValue("fromT", from);
+            }
+
+            else if (from == -1 && to != -1)
+            {
+                SQL = SQL + " WHERE yr_wk <= :toT";
+                cmd.Parameters.AddWithValue("toT", to);
+            }
+
+            else if (from != -1 && to != -1)
+            {
+                SQL = SQL + " WHERE yr_wk >= :fromT AND yr_wk <= :toT";
+                cmd.Parameters.AddWithValue("fromT", from);
+                cmd.Parameters.AddWithValue("toT", to);
+            }
+            else
+            {
+                SQL = SQL + " WHERE dept != 'null'";
+            }
+
+            if (dept != "null")
+            {
+                SQL = SQL + " AND dept = :dept";
+                cmd.Parameters.AddWithValue("dept", dept);
+            }
+
+            if(process_cntr != -1)
+            {
+                SQL = SQL + " AND process_cntr = :process_cntr";
+                cmd.Parameters.AddWithValue("process_cntr", process_cntr);
+            }
+
+            SQL = SQL + " ORDER BY yr_wk";
+
+            cmd.CommandText = SQL;
+            cmd.Connection = con;
+
+            /*
             if(from != -1 && to != -1)
             {
                 cmd = new OracleCommand("SELECT * FROM capacity WHERE dept= :dept AND process = :process AND yr_wk >= :fromT AND yr_wk <= :toT ORDER BY yr_wk", con);
@@ -93,6 +137,8 @@ namespace WebApplication1
             cmd.Parameters.AddWithValue("dept", dept);
             cmd.Parameters.AddWithValue("process", process);
 
+            */
+
 
             OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -100,7 +146,7 @@ namespace WebApplication1
             {
                 Order order = new Order();
 
-                order.dept = Convert.ToInt32(rdr["dept"]);
+                order.dept = rdr["dept"].ToString();
                 order.process = Convert.ToInt32(rdr["process"]);
                 order.avl_promise = Convert.ToInt32(rdr["avl_promise"]);
                 order.total_avl_qnty = Convert.ToInt32(rdr["total_avl_qnty"]);
@@ -140,7 +186,7 @@ namespace WebApplication1
         }
 
         [WebMethod(EnableSession = true)]
-        public void updateOrder(int dept, int process, int process_cntr,int yr_wk, int new_total_qnty)
+        public void updateOrder(string dept, int process, int process_cntr,int yr_wk, int new_total_qnty)
         {
             
             if(Session["edit"] == null)
@@ -198,7 +244,7 @@ namespace WebApplication1
         }
 
         [WebMethod(EnableSession = true)]
-        public void deleteOrder(int dept, int process, int process_cntr, int yr_wk)
+        public void deleteOrder(string dept, int process, int process_cntr, int yr_wk)
         {
             if (Session["edit"] == null)
             {
@@ -241,7 +287,7 @@ namespace WebApplication1
 
         }
 
-        private int alreadyPresent(int dept,int process,int process_cntr, int yr_wk)
+        private int alreadyPresent(string  dept,int process,int process_cntr, int yr_wk)
         {
             
             cmd = new OracleCommand();
@@ -333,7 +379,7 @@ namespace WebApplication1
         }
 
         [WebMethod(EnableSession = true)]
-        public void copyOrder(int dept, int process, int oldFrom, int oldTo, int newTo)
+        public void copyOrder(string dept, int process_cntr, int oldFrom, int oldTo, int newTo)
         {
             if (Session["edit"] == null)
             {
@@ -344,21 +390,17 @@ namespace WebApplication1
             {
                 cmd = new OracleCommand();
 
-                if (oldTo == 0)
-                {
+               
                     cmd.CommandText = "copy_from";
                     
-                } else
-                {
-                    cmd.CommandText = "copy_from_to";
-                    cmd.Parameters.AddWithValue("oldTo", oldTo);
-                }
+               
 
                 cmd.Connection = con;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("oldDept", dept);
-                cmd.Parameters.AddWithValue("oldProcess", process);
+                cmd.Parameters.AddWithValue("oldProcessCntr", process_cntr);
                 cmd.Parameters.AddWithValue("oldFrom", oldFrom);
+                cmd.Parameters.AddWithValue("oldTo", oldTo);
                 cmd.Parameters.AddWithValue("newTo", newTo);
 
 
@@ -384,6 +426,67 @@ namespace WebApplication1
                     Context.Response.Write(js.Serialize("Could not Copy"));
                 }
             }
+        }
+
+
+        private string encrypt(string password)
+        {
+            string msg = "";
+            byte[] encode = new byte[password.Length];
+            encode = Encoding.UTF8.GetBytes(password);
+            msg = Convert.ToBase64String(encode);
+            return msg;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public void change_password(string current_password, string new_password){
+
+            cmd = new OracleCommand();
+
+            string encrypted_current_password = encrypt(current_password);
+            string encrypted_new_password  = encrypt(new_password);
+
+            int eid = Convert.ToInt32(Session["eid"]);
+            string SQL = "SELECT password FROM cap_users WHERE eid = :eid";
+
+            cmd.CommandText = SQL;
+            cmd.Connection = con;
+            cmd.Parameters.AddWithValue("eid", eid);
+
+            string password = cmd.ExecuteScalar().ToString();
+
+            if(password != encrypted_current_password)
+            {
+                Context.Response.Write(js.Serialize("Wrong Password"));
+            }
+            else
+            {
+                SQL = "UPDATE cap_users SET password = :password WHERE eid = :eid";
+                cmd.CommandText = SQL;
+                cmd.Parameters.AddWithValue("password", encrypted_new_password);
+
+                int success =0;
+
+                try
+                {
+                    success = cmd.ExecuteNonQuery();
+                }
+                catch(Exception ex)
+                {
+                    Context.Response.Write(js.Serialize("Could not Change"));
+                }
+
+                if(success != 0)
+                {
+                    Context.Response.Write(js.Serialize("true"));
+                }
+                else
+                {
+                    Context.Response.Write(js.Serialize("Could not Change"));
+                }
+
+            }
+
         }
     }
 }

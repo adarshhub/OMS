@@ -2,7 +2,7 @@
 <%@ MasterType virtualPath="~/Site1.Master" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="form1" runat="server">
     <div id="login_box">
         <h1 class="h1">Login</h1>
         <form id="loginForm" runat="server" class="form-horizontal">

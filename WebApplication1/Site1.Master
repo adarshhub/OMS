@@ -10,6 +10,7 @@
 
     <!-- JS -->
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jQuery.js"></script>
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 
@@ -17,7 +18,7 @@
 <body>
 
     <div class="wrapper_sm">
-        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+        <asp:ContentPlaceHolder ID="form1" runat="server">
         </asp:ContentPlaceHolder>
     </div>
     <div runat="server" id="msg_box">

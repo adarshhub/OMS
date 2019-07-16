@@ -14,23 +14,31 @@ margin-right: auto;
 }
 
 .wrapper_lg{
-    width: 1280px;
+    width: 98%;
     margin-left: auto;
     margin-right: auto;
 }
 
-.content{
-    padding:17px;
-}
 
 #table_box, #control_box{
-    margin: 10px 0;
-    padding: 15px 0;
+    margin: 8px 0;
+    padding: 12px;
 }
 
 .control_wrapper{
     margin: 5px 0; 
     display: flex;
+}
+
+
+
+.form-inline > label {
+    text-align:center;
+}
+/*
+
+.content{
+    padding:17px;
 }
 
 #buttons_box{
@@ -40,8 +48,30 @@ margin-right: auto;
     display: flex;
 }
 
-.dropdown_box{
+    #left_btns_box{
+    display: grid;
+    margin-right:20px;
+}
+
+#right_btns_box{
+    display: flow-root;
+}
+
+    .dropdown_box{
     margin-right: 80px;
+}
+
+    .tbl_input{
+    position: absolute;
+}
+*/
+
+@media(max-width: 1012px){
+
+    .tabFirst_btn{
+     margin-bottom: 5px;
+}
+   
 }
 
 .tabFirst_btn{
@@ -52,13 +82,11 @@ margin-right: auto;
     width: 160px;
 }
 
-.tbl_input{
-    position: absolute;
-}
+
 
 #display_box {
     overflow-y: scroll;
-    max-height: 288px;
+    max-height: 360px;
 }
 
 #display_box table{
@@ -66,25 +94,15 @@ margin-right: auto;
 }
 
 #msg_box{
-    bottom: 0;
-}
-
-#left_btns_box{
-    display: grid;
-    margin-right:20px;
-}
-
-#right_btns_box{
-    display: flow-root;
-}
-
-#show_cap_table{
-    margin-bottom: 10px;
+    left:50%;
+    top: 12px;
+    position: absolute;
+    z-index: 2;
+    transform: translateX(-50%);
 }
 
 #copy_order_btn{
     float: right;
-    margin-right: 106px;
 }
 
 .scroll-table{

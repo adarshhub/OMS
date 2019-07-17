@@ -5,14 +5,24 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="form1" runat="server">
       <div id="register_box">
         <h1 class="h1">Register</h1>
+          <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString='<%$ ConnectionStrings:orcldb %>' ProviderName='<%$ ConnectionStrings:orcldb.ProviderName %>' SelectCommand='SELECT * FROM "SECURITY_QUES"'></asp:SqlDataSource>
         <form id="Form1" runat="server" class="form-horizontal">
             <div class="form-group">
                 <asp:Label runat="server" Text="Username"></asp:Label>
-                <asp:TextBox CssClass="form-control" ID="register_un" runat="server" required ViewStateMode="Enabled"></asp:TextBox>
+                <asp:TextBox CssClass="form-control" ID="register_un" runat="server" required ViewStateMode="Enabled"></asp:TextBox>       
             </div>
             <div class="form-group">
                 <asp:Label runat="server" Text="EID"></asp:Label>
                 <asp:TextBox CssClass="form-control" ID="register_eid" runat="server" required ViewStateMode="Enabled"></asp:TextBox>
+                <small  class="form-text text-muted">6 Digit Employee ID.</small>
+            </div>
+            <div class="form-group">
+                <asp:Label runat="server" Text="Security Answer"></asp:Label>
+                <asp:DropDownList ID="register_sq_ques" runat="server" CssClass="form-control" DataSourceID="SqlDataSource1" DataTextField="QUESTION" DataValueField="ID"></asp:DropDownList>
+                </div>
+            <div class="form-group">
+                <asp:Label runat="server" Text="Security Answer"></asp:Label>
+                <asp:TextBox ID="register_sq_ans" runat="server" CssClass="form-control" required></asp:TextBox>
             </div>
             <div class="form-group" id="password_form">
                 <asp:Label runat="server" Text="Password"></asp:Label>
@@ -30,6 +40,26 @@
         </form>
     </div>
     <script type="text/javascript">
+
+        /*
+        $(document).ready(function () {
+
+            var sq_quesDDL = $('#form1_register_sq_ques');
+
+            $.ajax({
+                url: 'TableService.asmx/getSecurityQuestions',
+                method: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    $(data).each(function (index, item) {
+                        sq_quesDDL.append($('<option/>', { value: item['id'], text: item['question'] }));
+                    });
+                }
+            });
+        });
+
+        */
+
         var password_form = document.getElementById('password_form');
         var invalid_msg = document.getElementById('password_form_invalid');
 

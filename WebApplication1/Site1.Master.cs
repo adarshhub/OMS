@@ -18,9 +18,14 @@ namespace WebApplication1
 
         }
 
-        public void addMessage(string msg)
+        public void errorMessage(string msg)
         {
-            msg_box.InnerHtml = "<div class='alert alert-warning' style='width: 200px; position: absolute; bottom: 0; left: 0; top: 20%; max-height: 135px; '><h4 class='alert-heading'>OOPs!</h4><p class='mb-0'>" + msg +"</p></div>";
+            ms_msg_box.InnerHtml = "<div class='alert alert-dismissible alert-warning'  ><h4 class='alert-heading'>Not Successfull!</h4><p class='mb-0'>" + msg + "</p></div>";
+        }
+
+        public void successMessage(string msg)
+        {
+            ms_msg_box.InnerHtml = "<div class='alert alert-dismissible alert-success'  ><h4 class='alert-heading'>Great!</h4><p class='mb-0'>" + msg + "</p></div>";
         }
     }
 }

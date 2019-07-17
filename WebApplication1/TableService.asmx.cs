@@ -48,8 +48,27 @@ namespace WebApplication1
             {
                 depts.Add(rdr["dept"].ToString());   
             }
-
+            rdr.Close();
             Context.Response.Write(js.Serialize(depts));
+        }
+
+        [WebMethod]
+        public void getSecurityQuestions()
+        {
+            List<SQ> questions = new List<SQ>();
+            cmd = new OracleCommand("SELECT * FROM security_ques", con);
+
+            OracleDataReader rdr = cmd.ExecuteReader();
+
+            while (rdr.Read())
+            {
+                SQ sq = new SQ();
+                sq.id = Convert.ToInt32(rdr["id"]);
+                sq.question = rdr["question"].ToString();
+                questions.Add(sq);
+            }
+            rdr.Close();
+            Context.Response.Write(js.Serialize(questions));
         }
 
         [WebMethod]
@@ -65,7 +84,7 @@ namespace WebApplication1
             {
                 process_cntrs.Add(Convert.ToInt32(rdr["process_cntr"]));
             }
-
+            rdr.Close();
             Context.Response.Write(js.Serialize(process_cntrs));
         }
 
@@ -97,10 +116,10 @@ namespace WebApplication1
             }
             else
             {
-                SQL = SQL + " WHERE dept != 'null'";
+                SQL = SQL + " WHERE dept != '-1'";
             }
 
-            if (dept != "null")
+            if (dept != "-1")
             {
                 SQL = SQL + " AND dept = :dept";
                 cmd.Parameters.AddWithValue("dept", dept);
@@ -156,7 +175,7 @@ namespace WebApplication1
 
                 orders.Add(order);
             }
-
+            rdr.Close();
             Context.Response.Write(js.Serialize(orders));
 
         }
@@ -166,15 +185,15 @@ namespace WebApplication1
         {
             Session["edit"] = "0";
 
-            int userid = Convert.ToInt32(Session["id"]);
+            int userid = Convert.ToInt32(Session["eid"]);
             cmd = new OracleCommand();
 
-            string sql = "SELECT isAdmin FROM cap_users WHERE id = :id";
+            string sql = "SELECT isAdmin FROM cap_users WHERE eid = :eid";
 
             cmd.Connection = con;
             cmd.CommandText = sql;
 
-            cmd.Parameters.AddWithValue("id", userid);
+            cmd.Parameters.AddWithValue("eid", userid);
 
             string admin = cmd.ExecuteScalar().ToString();
 
@@ -379,7 +398,7 @@ namespace WebApplication1
         }
 
         [WebMethod(EnableSession = true)]
-        public void copyOrder(string dept, int process_cntr, int oldFrom, int oldTo, int newTo)
+        public void copyOrder(string dept, int process_cntr, int copyFrom, int copyTo)
         {
             if (Session["edit"] == null)
             {
@@ -390,19 +409,14 @@ namespace WebApplication1
             {
                 cmd = new OracleCommand();
 
-               
-                    cmd.CommandText = "copy_from";
-                    
-               
+                cmd.CommandText = "copy_from";
 
                 cmd.Connection = con;
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("oldDept", dept);
-                cmd.Parameters.AddWithValue("oldProcessCntr", process_cntr);
-                cmd.Parameters.AddWithValue("oldFrom", oldFrom);
-                cmd.Parameters.AddWithValue("oldTo", oldTo);
-                cmd.Parameters.AddWithValue("newTo", newTo);
-
+                cmd.Parameters.AddWithValue("deptIN", dept);
+                cmd.Parameters.AddWithValue("processCntrIN", process_cntr);
+                cmd.Parameters.AddWithValue("copyFromIN", copyFrom);
+                cmd.Parameters.AddWithValue("copyToIN", copyTo);
 
                 int success;
 
@@ -429,7 +443,7 @@ namespace WebApplication1
         }
 
 
-        private string encrypt(string password)
+        private static string encrypt(string password)
         {
             string msg = "";
             byte[] encode = new byte[password.Length];
@@ -488,5 +502,113 @@ namespace WebApplication1
             }
 
         }
+
+        private class UQ {
+
+            public string question { set; get; }
+            public string username { set; get; }
+        }
+
+        [WebMethod]
+        public void checkEID(int eid)
+        {
+            cmd = new OracleCommand();
+            cmd.CommandText = "SELECT username, sq_id FROM cap_users WHERE eid = :eid";
+            cmd.Connection = con;
+            cmd.Parameters.AddWithValue("eid", eid);
+
+            try
+            {
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                rdr.Read();
+
+                UQ uq = new UQ();
+
+                uq.username = rdr["username"].ToString();
+                int ques_id = Convert.ToInt32(rdr["sq_id"]);
+
+                rdr.Close();
+                cmd = new OracleCommand();
+                cmd.CommandText = "SELECT question FROM security_ques WHERE id = :ques_id";
+                cmd.Connection = con;
+                cmd.Parameters.AddWithValue("ques_id", ques_id);
+
+                string question = cmd.ExecuteScalar().ToString();
+                uq.question = question;
+
+                Context.Response.Write(js.Serialize(uq));
+            }
+            catch(Exception ex)
+            {
+                Context.Response.Write(js.Serialize("false"));
+            }
+
+        }
+
+        [WebMethod(EnableSession = true)]
+        public void checkSecurityAnswer(int eid, string answer)
+        {
+            cmd = new OracleCommand();
+            cmd.CommandText = "SELECT sq_ans FROM cap_users WHERE eid = :eid";
+            cmd.Connection = con;
+
+            try
+            {
+                cmd.Parameters.AddWithValue("eid", eid);
+
+                string result = cmd.ExecuteScalar().ToString();
+
+                if (result == answer)
+                {
+                    Session["eid"] = eid;
+                    Context.Response.Write(js.Serialize("true"));
+                }
+                else
+                {
+                    Context.Response.Write(js.Serialize("false"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Context.Response.Write(js.Serialize("false"));
+            }
+            
+        }
+
+        [WebMethod(EnableSession = true)]
+        public void resetPassword(string password)
+        {
+            string encrpted_password = encrypt(password);
+            int eid = Convert.ToInt32(Session["eid"]);
+            cmd = new OracleCommand();
+            cmd.CommandText = "UPDATE cap_users SET password = :en_pass WHERE eid = :eid";
+            cmd.Connection = con;
+
+            cmd.Parameters.AddWithValue("en_pass", encrpted_password);
+            cmd.Parameters.AddWithValue("eid", eid);
+
+            int success =0;
+
+            try
+            {
+                success = cmd.ExecuteNonQuery();
+
+                if(success != 0)
+                {
+                    Context.Response.Write(js.Serialize("true"));
+                }
+                else
+                {
+                    Context.Response.Write(js.Serialize("false"));
+                }
+            }
+            catch
+            {
+                Context.Response.Write(js.Serialize("false"));
+            }
+        }
+
     }
 }

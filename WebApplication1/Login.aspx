@@ -1,5 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site1.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="WebApplication1.WebForm1" %>
-<%@ MasterType virtualPath="~/Site1.Master" %>
+
+<%@ MasterType VirtualPath="~/Site1.Master" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="form1" runat="server">
@@ -17,7 +18,9 @@
             <asp:Button ID="login_btn" CssClass="btn btn-primary" runat="server" Text="LogIn" OnClick="login_btn_Click" />
             <br />
             <asp:HyperLink ID="gotoSignup" runat="server" NavigateUrl="~/Register.aspx">Register Here</asp:HyperLink>
+             <br />
+            <asp:HyperLink runat="server" NavigateUrl="~/SecurityCheck.aspx">Forgot Password</asp:HyperLink>
         </form>
-        
+
     </div>
 </asp:Content>

@@ -80,6 +80,7 @@
     <Content Include="css\bootstrap.min.css" />
     <Content Include="css\style.css" />
     <Content Include="js\bootstrap.min.js" />
+    <Content Include="js\checkPassword.js" />
     <Content Include="js\jQuery.js" />
     <Content Include="js\login.js" />
     <Content Include="packages.config" />
@@ -89,6 +90,8 @@
     <Content Include="TableService.asmx" />
     <Content Include="User.Master" />
     <Content Include="Dashboard.aspx" />
+    <Content Include="SecurityCheck.aspx" />
+    <Content Include="ResetPassword.aspx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -126,6 +129,7 @@
     <Compile Include="Register.aspx.designer.cs">
       <DependentUpon>Register.aspx</DependentUpon>
     </Compile>
+    <Compile Include="SQ.cs" />
     <Compile Include="TableService.asmx.cs">
       <DependentUpon>TableService.asmx</DependentUpon>
       <SubType>Component</SubType>
@@ -143,6 +147,20 @@
     </Compile>
     <Compile Include="Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SecurityCheck.aspx.cs">
+      <DependentUpon>SecurityCheck.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SecurityCheck.aspx.designer.cs">
+      <DependentUpon>SecurityCheck.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ResetPassword.aspx.cs">
+      <DependentUpon>ResetPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ResetPassword.aspx.designer.cs">
+      <DependentUpon>ResetPassword.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <PropertyGroup>

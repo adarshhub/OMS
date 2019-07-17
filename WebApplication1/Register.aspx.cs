@@ -14,7 +14,7 @@ namespace WebApplication1
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            
         }
 
         OracleConnection con;
@@ -31,13 +31,15 @@ namespace WebApplication1
 
         protected void register_button_Click(object sender, EventArgs e)
         {
-            int eid;
-            string username, password1, password2;
+            int eid, sq_ques;
+            string username, password1, password2, sq_ans;
 
             eid = Convert.ToInt32(register_eid.Text);
             username = register_un.Text.ToString();
             password1 = register_password1.Text.ToString();
             password2 = register_password2.Text.ToString();
+            sq_ques = Convert.ToInt32(register_sq_ques.SelectedValue);
+            sq_ans = register_sq_ans.Text.ToString();
 
             con = new OracleConnection(Master.conString);
             cmd = new OracleCommand();
@@ -50,38 +52,40 @@ namespace WebApplication1
             string resp = cmd.ExecuteScalar().ToString();
             //OracleDataAdapter orada = new OracleDataAdapter(cmd.CommandText, con);
             if(resp == "1"){
-                Master.addMessage("EID already Registered");
+                Master.errorMessage("EID already Registered");
             } else
             {
-                if (eid < 100000 && eid > 999999)
+                if (eid < 100000 || eid > 999999)
                 {
-                    Master.addMessage("EID should be of 6 Digits");
+                    Master.errorMessage("EID should be of 6 Digits");
                 }
                 else if (password1 != password2)
                 {
-                    Master.addMessage("Password do not Match");
+                    Master.errorMessage("Password do not Match");
                 }
                 else
                 {
                     string encr_pass = encrypt(password1);
 
-                    sql = "INSERT INTO cap_users (username, eid, password, isAdmin) VALUES (:username, :eid, :password, :isAdmin)";
+                    sql = "INSERT INTO cap_users (username, eid, password, isAdmin, sq_id, sq_ans) VALUES (:username, :eid, :password, :isAdmin, :sq_id, :sq_ans)";
                     cmd.CommandText = sql;
                     cmd.Parameters.AddWithValue("eid", eid);
                     cmd.Parameters.AddWithValue("username", username);
                     cmd.Parameters.AddWithValue("password", encr_pass);
                     cmd.Parameters.AddWithValue("isAdmin", 0);
+                    cmd.Parameters.AddWithValue("sq_id", sq_ques);
+                    cmd.Parameters.AddWithValue("sq_ans", sq_ans);
 
                     int success = cmd.ExecuteNonQuery();
 
                     if (success != 0)
                     {
-                        Master.addMessage("Registration Successfull");
+                        Master.successMessage("Registration Successfull");
                         //Navigate to login page
                     }
                     else
                     {
-                        Master.addMessage("Something Went Wrong");
+                        Master.errorMessage("Something Went Wrong");
                     }
 
                 }

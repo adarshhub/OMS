@@ -21,7 +21,7 @@
         <asp:ContentPlaceHolder ID="form1" runat="server">
         </asp:ContentPlaceHolder>
     </div>
-    <div runat="server" id="msg_box">
+    <div runat="server" id="ms_msg_box" style="left: 50%; bottom: 12px; position: absolute; z-index: 2; transform: translateX(-50%);">
     </div>
 </body>
 </html>

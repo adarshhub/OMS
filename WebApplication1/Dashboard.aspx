@@ -21,7 +21,7 @@
                 method: 'POST',
                 dataType: 'json',
                 success: function (data) {
-                    deptDDL.append($('<option/>', { value: 'null', text: 'Select Plant' }));
+                    deptDDL.append($('<option/>', { value: '-1', text: 'Select Plant' }));
                     processCntrDDL.append($('<option/>', { value: -1, text: 'Select Cntr' }));
                     processCntrDDL.prop('disabled', true);
                     $(data).each(function (index, item) {
@@ -101,22 +101,18 @@
                                 <input type="button" id="show_cap_table" class="btn btn-info mb-2" value="Show" onclick="fetch_table()" />
                                 <input type="button" id="add_order_btn" class="btn btn-info mb-2" value="Add" onclick="addOrder()" />
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="form-inline mb-2">
-                                    <label class="col-sm-6">From:</label>
-                                    <input id="copyFrom" class="form-control col-sm-6" type="number" />
+                                    <label class="col-sm-6">Copy From:</label>
+                                    <input id="copyFrom" class="form-control col-sm-5" type="number" />
                                 </div>
                                 <div class="form-inline mb-2">
-                                    <label class="col-sm-6">To:</label>
-                                    <input id="copyTo" class=" form-control col-sm-6" type="number" />
+                                    <label class="col-sm-6">Copy To:</label>
+                                    <input id="copyTo" class=" form-control col-sm-5" type="number" />
 
                                 </div>
                             </div>
-                            <div class="col-sm-2">
-                                <div class="form-inline mb-2">
-                                    <label class="col-sm-5">New:</label>
-                                    <input id="newCopy" class=" form-control col-sm-6 mb-2" type="number" />
-                                </div>
+                            <div class="col-sm-1">
                                 <div class="col-sm-6">
                                     <input type="button" id="copy_order_btn" class="btn btn-info" value="Copy" onclick="copyOrder()" />
                                 </div>
@@ -245,6 +241,9 @@
         var fromInput = document.getElementById('yrwkFrom');
         var toInput = document.getElementById('yrwkTo');
 
+        var copyFrom_input = document.getElementById('copyFrom');
+        var copyTo_input = document.getElementById('copyTo');
+
         var display_box = $('#display_box');               //Jquery DOM element
         var msg_box = document.getElementById("msg_box");
         var addBtn = document.getElementById('add_order_btn');
@@ -287,7 +286,7 @@
                         $(data).each(function (index, item) {
                             tableID = item["dept"] + ' ' + item["process"] + ' ' + item["process_cntr"] + ' ' + item["yr_wk"];
 
-                            table += '<tr><td>' + '<span id="' + tableID + '_ED"><input type="button" class="btn btn-secondary tabFirst_btn btn-sm"  value="Edit" onclick="editOrder(' + item["dept"] + ',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ',' + item["total_avl_qnty"] + ')" ' + attr + '/><input type="button" class="btn btn-danger btn-sm" value="Delete" onclick="deleteOrder(' + item["dept"] + ',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ')" ' + attr + '/></span><span class="' + tableID + '_UC" hidden><input type="button" class="tabFirst_btn btn btn-secondary btn-sm"  value="Update"/><input type="button" class="btn btn-danger btn-sm" value="Cancel" /></span>' + '</td><td>' + item["dept"] + '</td><td>' + item["process_cntr"] + '</td><td>' + item["process"] + '</td><td>' + item["yr_wk"] + '</td><td><span id="' + tableID + ' text">' + item["total_avl_qnty"] + '</span><input id="' + tableID + ' input" class="tbl_input form-control col-sm" hidden/></td><td>' + item["avl_promise"] + '</td><td>' + item["order_qnty"] + '</td></tr>';
+                            table += '<tr><td>' + '<span id="' + tableID + '_ED"><input type="button" class="btn btn-secondary tabFirst_btn btn-sm"  value="Edit" onclick="editOrder(\'' + item["dept"] + '\',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ',' + item["total_avl_qnty"] + ')" ' + attr + '/><input type="button" class="btn btn-danger btn-sm" value="Delete" onclick="deleteOrder(\'' + item["dept"] + '\',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ')" ' + attr + '/></span><span class="' + tableID + '_UC" hidden><input type="button" class="tabFirst_btn btn btn-secondary btn-sm"  value="Update"/><input type="button" class="btn btn-danger btn-sm" value="Cancel" /></span>' + '</td><td>' + item["dept"] + '</td><td>' + item["process_cntr"] + '</td><td>' + item["process"] + '</td><td>' + item["yr_wk"] + '</td><td><span id="' + tableID + ' text">' + item["total_avl_qnty"] + '</span><input id="' + tableID + ' input" class="tbl_input form-control col-sm" hidden/></td><td>' + item["avl_promise"] + '</td><td>' + item["order_qnty"] + '</td></tr>';
                         });
 
                         table += '</tbody></table>';
@@ -426,52 +425,59 @@
             order.total_avl_qnty = total_avl_qnty;
             order.order_qnty = order_qnty;
 
-            // $('#addModal').modal('hide');
+            if (dept == '' || process == '' || process_cntr == '' || yr_wk == '' || yr_wk < 100000 || yr_wk > 999999 || isNaN(yr_wk) || isNaN(total_avl_qnty)) {
 
-            $.ajax({
-                url: 'TableService.asmx/addOrder',
-                method: 'POST',
-                data: { jsonOrder: JSON.stringify(order) },
-                dataType: 'json',
-                success: function (data) {
+                msg_box.innerHTML = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">Invalid or empty input</p></div>';
+            }
+            else {
 
-                    hide_add_inputs();
+                $.ajax({
+                    url: 'TableService.asmx/addOrder',
+                    method: 'POST',
+                    data: { jsonOrder: JSON.stringify(order) },
+                    dataType: 'json',
+                    success: function (data) {
 
-                    var html;
+                        hide_add_inputs();
 
-                    if (data != "true") {
-                        html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">' + data + '</p></div>';
+                        var html;
 
-                    } else {
-                        html = '<div class="alert alert-dismissible alert-success"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Successfull!</h4><p class="mb-0">New Order Added</p></div>';
+                        if (data != "true") {
+                            html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">' + data + '</p></div>';
+
+                        } else {
+                            html = '<div class="alert alert-dismissible alert-success"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Successfull!</h4><p class="mb-0">New Order Added</p></div>';
+                        }
+
+                        msg_box.innerHTML = html;
+
                     }
-
-                    msg_box.innerHTML = html;
-
-                }
-            });
+                });
+            }
 
         }
 
         function copyOrder() {
 
-            var changeTo = parseInt(document.getElementById('newCopy').value);
-            var dept = deptDDL.value;
-            var process_cntr = processCntrDDL.value;
-            var oldFrom = parseInt(copyFrom.value);
-            var oldTo = copyTo.value == "" ? -1 : parseInt(copyTo.value);
+            
+            var dept = deptDDL.value.toString();
+            var process_cntr = parseInt(processCntrDDL.value);
+            var copyFrom = parseInt(copyFrom_input.value);
+            var copyTo = parseInt(copyTo_input.value);
+
+            console.log(dept);
+            console.log(process_cntr);
+            console.log(copyFrom);
 
 
-            if (changeTo == "" || oldFrom == "") {
+            if (isNaN(copyFrom) || isNaN(copyTo) || copyFrom < 100000 || copyTo < 100000 || copyFrom > 999999 || copyTo > 999999) {
                 msg_box.innerHTML = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0"> Enter Required fields</p></div>';
             } else {
-
-
 
                 $.ajax({
                     url: 'TableService.asmx/copyOrder',
                     method: 'POST',
-                    data: { dept: dept, process_cntr: process_cntr, oldFrom: oldFrom, oldTo: oldTo, newTo: changeTo },
+                    data: { dept: dept, process_cntr: process_cntr, copyFrom: copyFrom, copyTo: copyTo},
                     dataType: 'json',
                     success: function (data) {
 
@@ -517,6 +523,7 @@
             var confirm_password_invalid = document.getElementById('confirm_password_invalid');
 
             $('#new_password').on('input', function (e) {
+
                 new_password_form.classList.add('has-danger');
                 e.target.classList.add('is-invalid');
                 new_password_form.classList.remove('has-success');
@@ -596,13 +603,6 @@
             });
         }
 
-        
-
-        function confirmChangePassword() {
-
-            
-        }
-       
 
     </script>
 </asp:Content>

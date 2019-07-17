@@ -65,7 +65,7 @@ namespace WebApplication1
                     reader.Close();
                     if (password != decrypt(passR))
                     {
-                        Master.addMessage("Wrong Password");
+                        Master.errorMessage("Wrong Password");
                     }
                     else
                     {
@@ -77,14 +77,14 @@ namespace WebApplication1
                 }
                 else
                 {
-                    Master.addMessage("Not Registered");
+                    Master.errorMessage("Not Registered");
                 }
 
             }
 
             catch(Exception ex)
             {
-                Master.addMessage("Something Went Wrong");
+                Master.errorMessage("Something Went Wrong");
             }
 
             con.Close();

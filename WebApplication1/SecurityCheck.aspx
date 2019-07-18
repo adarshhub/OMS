@@ -10,6 +10,8 @@
     </div>
     <input type="button" value="Find" class="btn btn-primary" onclick="findEID()" />
     <br />
+    <asp:HyperLink runat="server" NavigateUrl="~/Login.aspx">Back To Login</asp:HyperLink>
+    <br />
     <br />
      <h2 class="h2" id="forgot_username"></h2>
     <div id="security_box" class="card border-secondary p-3" hidden>

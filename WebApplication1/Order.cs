@@ -8,7 +8,7 @@ namespace WebApplication1
     public class Order
     {
         public string dept { set; get; }
-        public int process { set; get; }
+        public string process { set; get; }
         public int process_cntr { set; get; }
         public int total_avl_qnty { set; get; }
         public int order_qnty { set; get; }

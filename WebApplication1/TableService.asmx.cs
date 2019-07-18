@@ -75,7 +75,7 @@ namespace WebApplication1
         public void getProcessCntr(string dept)
         {
             List<int> process_cntrs = new List<int>();
-            cmd = new OracleCommand("SELECT DISTINCT process_cntr FROM capacity WHERE dept = :dept", con);
+            cmd = new OracleCommand("SELECT DISTINCT process_cntr FROM capacity WHERE dept = :dept ORDER BY process_cntr", con);
             cmd.Parameters.AddWithValue("dept", dept);
 
             OracleDataReader rdr = cmd.ExecuteReader();
@@ -166,7 +166,7 @@ namespace WebApplication1
                 Order order = new Order();
 
                 order.dept = rdr["dept"].ToString();
-                order.process = Convert.ToInt32(rdr["process"]);
+                order.process = rdr["process"].ToString();
                 order.avl_promise = Convert.ToInt32(rdr["avl_promise"]);
                 order.total_avl_qnty = Convert.ToInt32(rdr["total_avl_qnty"]);
                 order.order_qnty = Convert.ToInt32(rdr["order_qnty"]);
@@ -205,7 +205,7 @@ namespace WebApplication1
         }
 
         [WebMethod(EnableSession = true)]
-        public void updateOrder(string dept, int process, int process_cntr,int yr_wk, int new_total_qnty)
+        public void updateOrder(string dept, string process, int process_cntr,int yr_wk, int new_total_qnty)
         {
             
             if(Session["edit"] == null)
@@ -263,7 +263,7 @@ namespace WebApplication1
         }
 
         [WebMethod(EnableSession = true)]
-        public void deleteOrder(string dept, int process, int process_cntr, int yr_wk)
+        public void deleteOrder(string dept, string process, int process_cntr, int yr_wk)
         {
             if (Session["edit"] == null)
             {
@@ -306,7 +306,7 @@ namespace WebApplication1
 
         }
 
-        private int alreadyPresent(string  dept,int process,int process_cntr, int yr_wk)
+        private int alreadyPresent(string  dept, string process,int process_cntr, int yr_wk)
         {
             
             cmd = new OracleCommand();

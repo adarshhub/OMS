@@ -2,61 +2,7 @@
 
 <%@ MasterType VirtualPath="~/User.Master" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <script type="text/javascript">
-
-
-        $(document).ready(function () {
-
-            var deptDDL = $('#DeptList');
-            var processCntrDDL = $('#ProcessCntrList');
-            var tableSQL = "";
-
-            if (isAdmin != 1) {
-                $('#add_order_btn').attr("disabled", true);
-                $('#copy_order_btn').attr("disabled", true);
-            }
-
-            $.ajax({
-                url: 'TableService.asmx/getDepatments',
-                method: 'POST',
-                dataType: 'json',
-                success: function (data) {
-                    deptDDL.append($('<option/>', { value: '-1', text: 'Select Plant' }));
-                    processCntrDDL.append($('<option/>', { value: -1, text: 'Select Cntr' }));
-                    processCntrDDL.prop('disabled', true);
-                    $(data).each(function (index, item) {
-                        deptDDL.append($('<option/>', { value: item, text: item }));
-                    });
-                }
-            });
-
-            deptDDL.change(function () {
-
-                processCntrDDL.empty();
-                processCntrDDL.append($('<option/>', { value: -1, text: 'Select Cntr' }));
-
-                if ($(this).val() == -1) {
-                    processCntrDDL.val(-1);
-                    processCntrDDL.prop('disabled', true);
-                } else {
-
-                    $.ajax({
-                        url: 'TableService.asmx/getProcessCntr',
-                        method: 'POST',
-                        data: { dept: $(this).val() },
-                        dataType: 'json',
-                        success: function (data) {
-                            processCntrDDL.prop('disabled', false);
-                            $(data).each(function (index, item) {
-                                processCntrDDL.append($('<option/>', { value: item, text: item }));
-                            });
-                        }
-                    });
-                }
-            });
-        });
-
-    </script>
+ 
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <ul class="nav nav-tabs">
@@ -236,8 +182,8 @@
 
     <script type="text/javascript">
 
-        var deptDDL = document.getElementById('DeptList');
-        var processCntrDDL = document.getElementById('ProcessCntrList');
+        var deptDDL = $('#DeptList');
+        var processCntrDDL = $('#ProcessCntrList');
         var fromInput = document.getElementById('yrwkFrom');
         var toInput = document.getElementById('yrwkTo');
 
@@ -248,10 +194,64 @@
         var msg_box = document.getElementById("msg_box");
         var addBtn = document.getElementById('add_order_btn');
 
+        
+
+        if (isAdmin != 1) {
+            $('#add_order_btn').attr("disabled", true);
+            $('#copy_order_btn').attr("disabled", true);
+        }
+
+        function updateDropdownList() {
+
+            deptDDL.empty();
+
+            $.ajax({
+                url: 'TableService.asmx/getDepatments',
+                method: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    deptDDL.append($('<option/>', { value: '-1', text: 'Select Plant' }));
+                    processCntrDDL.append($('<option/>', { value: -1, text: 'Select Cntr' }));
+                    processCntrDDL.prop('disabled', true);
+                    $(data).each(function (index, item) {
+                        deptDDL.append($('<option/>', { value: item, text: item }));
+                    });
+                }
+            });
+
+        }
+
+        deptDDL.change(function () {
+
+            processCntrDDL.empty();
+            processCntrDDL.append($('<option/>', { value: -1, text: 'Select Cntr' }));
+
+            if ($(this).val() == -1) {
+                processCntrDDL.val(-1);
+                processCntrDDL.prop('disabled', true);
+            } else {
+
+                $.ajax({
+                    url: 'TableService.asmx/getProcessCntr',
+                    method: 'POST',
+                    data: { dept: $(this).val() },
+                    dataType: 'json',
+                    success: function (data) {
+                        processCntrDDL.prop('disabled', false);
+                        $(data).each(function (index, item) {
+                            processCntrDDL.append($('<option/>', { value: item, text: item }));
+                        });
+                    }
+                });
+            }
+        });
+
+        updateDropdownList();
+
         function fetch_table() {
 
-            var dept = deptDDL.value;
-            var process_cntr = processCntrDDL.value;
+            var dept = deptDDL.val();
+            var process_cntr = processCntrDDL.val();
             var from = fromInput.value == '' ? -1 : parseInt(fromInput.value);
             var to = toInput.value == '' ? -1 : parseInt(toInput.value);
 
@@ -286,7 +286,7 @@
                         $(data).each(function (index, item) {
                             tableID = item["dept"] + ' ' + item["process"] + ' ' + item["process_cntr"] + ' ' + item["yr_wk"];
 
-                            table += '<tr><td>' + '<span id="' + tableID + '_ED"><input type="button" class="btn btn-secondary tabFirst_btn btn-sm"  value="Edit" onclick="editOrder(\'' + item["dept"] + '\',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ',' + item["total_avl_qnty"] + ')" ' + attr + '/><input type="button" class="btn btn-danger btn-sm" value="Delete" onclick="deleteOrder(\'' + item["dept"] + '\',' + item["process"] + ',' + item["process_cntr"] + ',' + item["yr_wk"] + ')" ' + attr + '/></span><span class="' + tableID + '_UC" hidden><input type="button" class="tabFirst_btn btn btn-secondary btn-sm"  value="Update"/><input type="button" class="btn btn-danger btn-sm" value="Cancel" /></span>' + '</td><td>' + item["dept"] + '</td><td>' + item["process_cntr"] + '</td><td>' + item["process"] + '</td><td>' + item["yr_wk"] + '</td><td><span id="' + tableID + ' text">' + item["total_avl_qnty"] + '</span><input id="' + tableID + ' input" class="tbl_input form-control col-sm" hidden/></td><td>' + item["avl_promise"] + '</td><td>' + item["order_qnty"] + '</td></tr>';
+                            table += '<tr><td>' + '<span id="' + tableID + '_ED"><input type="button" class="btn btn-secondary tabFirst_btn btn-sm"  value="Edit" onclick="editOrder(\'' + item["dept"] + '\',\'' + item["process"] + '\',' + item["process_cntr"] + ',' + item["yr_wk"] + ',' + item["total_avl_qnty"] + ')" ' + attr + '/><input type="button" class="btn btn-danger btn-sm" value="Delete" onclick="deleteOrder(\'' + item["dept"] + '\',\'' + item["process"] + '\',' + item["process_cntr"] + ',' + item["yr_wk"] + ')" ' + attr + '/></span><span class="' + tableID + '_UC" hidden><input type="button" class="tabFirst_btn btn btn-secondary btn-sm"  value="Update"/><input type="button" class="btn btn-danger btn-sm" value="Cancel" /></span>' + '</td><td>' + item["dept"] + '</td><td>' + item["process_cntr"] + '</td><td>' + item["process"] + '</td><td>' + item["yr_wk"] + '</td><td><span id="' + tableID + ' text">' + item["total_avl_qnty"] + '</span><input id="' + tableID + ' input" class="tbl_input form-control col-sm" hidden/></td><td>' + item["avl_promise"] + '</td><td>' + item["order_qnty"] + '</td></tr>';
                         });
 
                         table += '</tbody></table>';
@@ -308,6 +308,8 @@
 
                     //Refresh Table
                     fetch_table();
+                    //Refresh Dropdown List
+                    updateDropdownList();
 
                     if (data == "false") {
                         var html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">Something Went Wrong</p></div>';
@@ -397,7 +399,7 @@
 
             var order_table = $('#order_table');
 
-            var html = '<tr><td><span class="addOrder_CC"><input type="button" id="confirm_addOrder_btn" class="tabFirst_btn btn btn-success btn-sm"  value="Confirm"/><input type="button" id="cancel_addOrder_btn" class="btn btn-danger btn-sm" value="Cancel" /></span></td><td><input id="add_dept_val" class="col-sm form-control tbl_input" type="text" required/></td><td><input id="add_process_cntr_val" class="col-sm form-control tbl_input" type="number" required/></td><td><input id="add_process_val" class="col-sm form-control tbl_input" type="number" required/></td><td><input id="add_yr_wk_val" class="col-sm form-control tbl_input" type="number" required/></td><td><input id="add_total_avl_qnty_val" class="col-sm form-control tbl_input" type="number" required/></td><td><input id="add_avl_promise_val" class="col-sm form-control tbl_input" type="number" required value="0" disabled/></td><td><input id="add_order_qnty_val" class="col-sm form-control tbl_input" type="number" required value="0" disabled/></td></tr>';
+            var html = '<tr><td><span class="addOrder_CC"><input type="button" id="confirm_addOrder_btn" class="tabFirst_btn btn btn-success btn-sm"  value="Confirm"/><input type="button" id="cancel_addOrder_btn" class="btn btn-danger btn-sm" value="Cancel" /></span></td><td><input id="add_dept_val" class="col-sm form-control tbl_input" type="text" required/></td><td><input id="add_process_cntr_val" class="col-sm form-control tbl_input" type="number" required/></td><td><input id="add_process_val" class="col-sm form-control tbl_input" type="text" required/></td><td><input id="add_yr_wk_val" class="col-sm form-control tbl_input" type="number" required/></td><td><input id="add_total_avl_qnty_val" class="col-sm form-control tbl_input" type="number" required/></td><td><input id="add_avl_promise_val" class="col-sm form-control tbl_input" type="number" required value="0" disabled/></td><td><input id="add_order_qnty_val" class="col-sm form-control tbl_input" type="number" required value="0" disabled/></td></tr>';
 
             order_table.find('tbody').prepend(html);
 
@@ -425,7 +427,7 @@
             order.total_avl_qnty = total_avl_qnty;
             order.order_qnty = order_qnty;
 
-            if (dept == '' || process == '' || process_cntr == '' || yr_wk == '' || yr_wk < 100000 || yr_wk > 999999 || isNaN(yr_wk) || isNaN(total_avl_qnty)) {
+            if (dept == '' || process == '' || process_cntr == '' || yr_wk == '' || yr_wk < 100000 || yr_wk > 999999 || isNaN(yr_wk) || isNaN(total_avl_qnty) || isNaN(process_cntr) || process_cntr <100 || process_cntr > 999) {
 
                 msg_box.innerHTML = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">Invalid or empty input</p></div>';
             }
@@ -445,8 +447,9 @@
                         if (data != "true") {
                             html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">' + data + '</p></div>';
 
-                        } else {
+                        } else { 
                             html = '<div class="alert alert-dismissible alert-success"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Successfull!</h4><p class="mb-0">New Order Added</p></div>';
+                            updateDropdownList();
                         }
 
                         msg_box.innerHTML = html;
@@ -460,8 +463,8 @@
         function copyOrder() {
 
             
-            var dept = deptDDL.value.toString();
-            var process_cntr = parseInt(processCntrDDL.value);
+            var dept = deptDDL.val().toString();
+            var process_cntr = parseInt(processCntrDDL.val());
             var copyFrom = parseInt(copyFrom_input.value);
             var copyTo = parseInt(copyTo_input.value);
 
@@ -487,7 +490,7 @@
                             html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">' + data + '</p></div>';
 
                         } else {
-                            html = '<div class="alert alert-dismissible alert-success"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Successfull!</h4><p class="mb-0">New Order Added</p></div>';
+                            html = '<div class="alert alert-dismissible alert-success"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Successfull!</h4><p class="mb-0">Old Order Copied</p></div>';
                         }
 
                         msg_box.innerHTML = html;

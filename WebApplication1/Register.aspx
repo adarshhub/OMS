@@ -62,8 +62,10 @@
 
         var password_form = document.getElementById('password_form');
         var invalid_msg = document.getElementById('password_form_invalid');
+        var register_btn = document.getElementById('form1_register_button');
+        register_btn.disabled = true;
 
-        function checkPassword(input){
+            function checkPassword(input) {
             var pass_pattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/;
             if (input.match(pass_pattern)) {
                 return true;
@@ -78,7 +80,7 @@
             e.target.classList.add('is-invalid');
             password_form.classList.remove('has-success');
             e.target.classList.remove('is-valid');
-
+            register_btn.disabled = true;
             if (e.target.value.length < 6) {
                 invalid_msg.innerText = "Length should be atleast 6";
             } else {
@@ -86,7 +88,7 @@
 
                     invalid_msg.innerText = "Password should contain atleast 1 special character and 1 numeric";
                 } else {
-
+                    register_btn.disabled = false;
                     password_form.classList.remove('has-danger');
                     e.target.classList.remove('is-invalid');
                     e.target.classList.add('is-valid');

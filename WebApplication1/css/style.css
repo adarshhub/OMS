@@ -8,9 +8,10 @@
 }
 
 .wrapper_sm{
-    width:800px;
+    padding: 12px;
+    max-width:800px;
     margin-left: auto;
-margin-right: auto;
+    margin-right: auto;
 }
 
 .wrapper_lg{

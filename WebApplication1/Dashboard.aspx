@@ -47,18 +47,21 @@
                                 <input type="button" id="show_cap_table" class="btn btn-info mb-2" value="Show" onclick="fetch_table()" />
                                 <input type="button" id="add_order_btn" class="btn btn-info mb-2" value="Add" onclick="addOrder()" />
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <div class="form-inline mb-2">
-                                    <label class="col-sm-6">Copy From:</label>
-                                    <input id="copyFrom" class="form-control col-sm-5" type="number" />
+                                    <label class="col-sm-6">Copy Week:</label>
+                                    <input id="copyWeek" class="form-control col-sm-6" type="number" />
                                 </div>
                                 <div class="form-inline mb-2">
-                                    <label class="col-sm-6">Copy To:</label>
-                                    <input id="copyTo" class=" form-control col-sm-5" type="number" />
-
-                                </div>
+                                    <label class="col-sm-6">Copy Start:</label>
+                                    <input id="copyFrom" class="form-control col-sm-6" type="number" />
+                                </div>                               
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-sm-2">
+                                <div class="form-inline mb-2">
+                                    <label class="col-sm-5">Copy End:</label>
+                                    <input id="copyTo" class=" form-control col-sm-6" type="number" />
+                                </div>
                                 <div class="col-sm-6">
                                     <input type="button" id="copy_order_btn" class="btn btn-info" value="Copy" onclick="copyOrder()" />
                                 </div>
@@ -462,41 +465,43 @@
 
         function copyOrder() {
 
-            
+            var copy_week_input = document.getElementById('copyWeek');
+
             var dept = deptDDL.val().toString();
             var process_cntr = parseInt(processCntrDDL.val());
             var copyFrom = parseInt(copyFrom_input.value);
             var copyTo = parseInt(copyTo_input.value);
-
-            console.log(dept);
-            console.log(process_cntr);
-            console.log(copyFrom);
+            var copyWeek = parseInt(copy_week_input.value);
 
 
-            if (isNaN(copyFrom) || isNaN(copyTo) || copyFrom < 100000 || copyTo < 100000 || copyFrom > 999999 || copyTo > 999999) {
+            if (  isNaN(copyFrom) || isNaN(copyTo) || copyFrom < 100000 || copyTo < 100000 || copyFrom > 999999 || copyTo > 999999 || isNaN(copyWeek) || copyWeek < 100000 || copyWeek > 999999) {
                 msg_box.innerHTML = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0"> Enter Required fields</p></div>';
             } else {
 
-                $.ajax({
-                    url: 'TableService.asmx/copyOrder',
-                    method: 'POST',
-                    data: { dept: dept, process_cntr: process_cntr, copyFrom: copyFrom, copyTo: copyTo},
-                    dataType: 'json',
-                    success: function (data) {
+                for (var i = copyFrom; i <= copyTo; i++) {
+                    $.ajax({
+                        url: 'TableService.asmx/copyOrder',
+                        method: 'POST',
+                        data: { dept: dept, process_cntr: process_cntr, copyFrom: copyWeek, copyTo: i },
+                        dataType: 'json',
+                        success: function (data) {
 
-                        var html;
+                            var html;
 
-                        if (data != "true") {
-                            html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">' + data + '</p></div>';
+                            if (data != "true") {
+                                html = '<div class="alert alert-dismissible alert-warning"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Not Successfull!</h4><p class="mb-0">' + data + '</p></div>';
 
-                        } else {
-                            html = '<div class="alert alert-dismissible alert-success"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Successfull!</h4><p class="mb-0">Old Order Copied</p></div>';
+                            } else {
+                                html = '<div class="alert alert-dismissible alert-success"  ><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Successfull!</h4><p class="mb-0">Old Order Copied</p></div>';
+                            }
+
+                            msg_box.innerHTML = html;
+
                         }
+                    });
+                }
 
-                        msg_box.innerHTML = html;
-
-                    }
-                });
+                
             }
         }
 
